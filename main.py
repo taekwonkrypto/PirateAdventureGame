@@ -1,125 +1,68 @@
-import random, os
-from files.lists import area_names, area_types, area_directions, secret_area_names, battle_fighters
-from files.classes import Player, Enemy
+import os
+from files.lists import battle_fighters
+from mapgeneration import *
+from files.classes import *
+from files.helpers import *
 from termcolor import colored
 
+def checkIfPlayerWon():
+    visited_areas = 0
+    for area_name in game_map:
+        #print(f'** {area_name}')
+        if game_map[area_name]['visited']:
+            #print(f'You have visited {area_name}')
+            visited_areas += 1
+    percent_map_visited = round((visited_areas/len(game_map))*100)
+    #print(f'You have visited {percent_map_visited}% of the map!')
+    if visited_areas == len(game_map):
+        print('Oy!  You visited EVERY AREA OF THE MAP!')
+        return True
+    else:
+        return False
 
-# Generate a random dictionary of rooms with connections and secret doors
-def generate_random_map(_num_areas):
-    total_secret_areas = 0
-    secret_areas = {}
-    areas = {}
-    unique_area_names = random.sample(area_names, _num_areas)
-    for i in range(_num_areas):
-        area_name = unique_area_names[i]
-        # CREATE ALL OF THE GAME AREAS AND SET THEM TO BASICALLY EMPTY STUFF
-        areas[area_name] = {'area_type': None,
-                            'connections': {},
-                            'secret_area_connections': {},
-                            'coordinates': None,
-                            'visited': False
-        }
+def gameStart(current_area, player):
+    open_water_first_time = True
+    treasure_first_time = True
+    maelstrom_first_time = True
+    island_first_time = True
+    while True:
+        os.system('clear')
+        area_color = getItemColor(game_map[current_area]['area_type'])
+        game_map[current_area]['visited'] = True
+        player_won = checkIfPlayerWon()
+        if player_won:
+            print("Wow!  You won!")
+            break
 
-    # TO CONNECT THE MAP, I AM GOING TO MANUALLY TRAVERSE ALL OF IT, CONNECTING IT AS I GO
-    # I TRIED SEVERAL OTHER ITERATIONS (GOOGLE 'PRIMS ALGORITHM' BUT IN THE END, THIS WAS THE MOST DEPENDABLE
-    # TO CREATE AN ACTUAL GRID, SO EAST 4X WILL GET YOU BACK TO THE SAME OPEN AREA
-    unvisited_areas = list(areas.keys())  # FIRST, CREATE A LIST OF ALL OF THE AREA NAMES (AREAS.KEYS())
-    current_area = random.choice(list(areas.keys())) # RANDOMLY PICK A STARTING POINT
-    visited_areas = [current_area] # BEGIN A NEW ARRAY OF AREAS VISITED, TO KEEP TRACK
-    unvisited_areas.remove(current_area) # REMOVE THE AREA WE ARE IN, BECAUSE WE HAVE VISITED IT.
-    coordinates = [0,0] # NEEDED THIS TO MAKE SURE I HANDLE GOING BACK INTO AN AREA PROPERLY
-    while unvisited_areas:
-        areas[current_area]['coordinates'] = coordinates
-        if areas[current_area]['connections'].keys():
-            # GET A DIRECTION NOT USED ALREADY IN THAT PARTICULAR AREA
-            direction = random.choice(list(set(area_directions) - set(areas[current_area]['connections'].keys())))
-            if direction == 'west':
-                coordinates = [areas[current_area]['coordinates'][0] - 1,areas[current_area]['coordinates'][1]]
-            elif direction == 'east':
-                coordinates = [areas[current_area]['coordinates'][0] + 1,areas[current_area]['coordinates'][1]]
-            elif direction == 'north':
-                coordinates = [areas[current_area]['coordinates'][0],areas[current_area]['coordinates'][1] + 1]
-            elif direction == 'south':
-                coordinates = [areas[current_area]['coordinates'][0],areas[current_area]['coordinates'][1] - 1]
-            match_found = False
-            for area_name, area_info in areas.items():
-                if area_info.get('coordinates') == coordinates:
-                    match_found = True
-                    next_area = area_name
-            if not match_found:
-                next_area = random.choice(unvisited_areas)
-                unvisited_areas.remove(next_area)
-            areas[next_area]['coordinates'] = coordinates
-            visited_areas.append(next_area)
-            areas[current_area]['connections'][direction] = next_area
-            areas[next_area]['connections'][get_opposite_door(direction)] = current_area
-            current_area = next_area
+        print("You are in " + colored(current_area,"cyan") + ", a " + colored(game_map[current_area]['area_type'], area_color) + " Area.")
+
+        options = ', '.join(game_map[current_area]['connections'].keys())
+        # print('Available directions:', ', '.join(random_map[current_area]['connections'].keys()))
+        print('Available directions:', colored(options, "red"))
+
+        if game_map[current_area]['secret_area_connections']:
+            print('You sense a hidden path in one direction...')
+
+        direction = input('Enter a direction (above) to move, or "quit" to exit: ').strip().lower()
+
+        if direction == 'quit':
+            print('Thanks for playing!')
+            break
+
+        if direction in game_map[current_area]['connections']:
+            current_area = game_map[current_area]['connections'][direction]
+        elif direction in game_map[current_area]['secret_area_connections']:
+            print("You've discovered a hidden path!")
+            current_area = game_map[current_area]['secret_area_connections'][direction]
         else:
-            direction = random.choice(area_directions)
-            if direction == 'west':
-                coordinates = [areas[current_area]['coordinates'][0] - 1,areas[current_area]['coordinates'][1]]
-            elif direction == 'east':
-                coordinates = [areas[current_area]['coordinates'][0] + 1,areas[current_area]['coordinates'][1]]
-            elif direction == 'north':
-                coordinates = [areas[current_area]['coordinates'][0],areas[current_area]['coordinates'][1] + 1]
-            elif direction == 'south':
-                coordinates = [areas[current_area]['coordinates'][0],areas[current_area]['coordinates'][1] - 1]
-            next_area = random.choice(unvisited_areas)
-            areas[next_area]['coordinates'] = coordinates
-            visited_areas.append(next_area)
-            unvisited_areas.remove(next_area)
-            areas[current_area]['connections'][direction] = next_area
-            areas[next_area]['connections'][get_opposite_door(direction)] = current_area
-            current_area = next_area
-
-    for area_name in areas:
-        areas[area_name]['area_type'] = random.choice(area_types)
-
-    # CREATE AND UPDATE SECRET AREAS
-    secret_room_counter = 0
-    areas_to_have_secret_rooms = random.sample(list(areas.keys()), round(num_areas * 0.1))
-    if not areas_to_have_secret_rooms:
-        areas_to_have_secret_rooms = random.sample(list(areas.keys()), 1)
-    unique_secret_area_names = random.sample(secret_area_names, len(areas_to_have_secret_rooms))
-
-    for area_name in areas_to_have_secret_rooms:
-        secret_area_direction = random.choice(list(set(area_directions) - set(areas[area_name]['connections'].keys())))
-        areas[area_name]['secret_area_connections'][secret_area_direction] = unique_secret_area_names[secret_room_counter]
-        secret_room_counter += 1
-
-    for area_name, area_data in areas.items():
-        if area_data['secret_area_connections']:
-            secret_area_name = area_data['secret_area_connections'][list(area_data['secret_area_connections'])[0]]
-            secret_areas[secret_area_name] = {'area_type': 'Secret Area', 'connections': {}, 'secret_area_connections': None}
-            secret_areas[secret_area_name]['connections'][get_opposite_door(list(area_data['secret_area_connections'])[0])] = area_name
-
-    areas.update(secret_areas)
-    return areas
-
-# Helper function to get the opposite door direction
-def get_opposite_door(direction):
-    opposites = {'north': 'south', 'south': 'north', 'west': 'east', 'east': 'west'}
-    return opposites[direction]
-
-def printMap(areas):
-    # Print the generated map
-    for area_name, area_data in random_map.items():
-        connections = area_data['connections']
-        secret_area_connections = area_data['secret_area_connections']
-        area_type = area_data['area_type']
-        print(
-            f"{area_name} - connections: {', '.join([f'{area}: {connected_area}' for area, connected_area in connections.items()])}")
-        print(f"   Area Type: {area_type}")
-        if secret_area_connections:
-            print(f"   Secret Area: {secret_area_connections}")
+            print('You cannot go that way.')
 
 if __name__ == "__main__":
     # Generate a map with num_areas rooms and connect them
-    num_areas = 25
-    random_map = generate_random_map(num_areas)
-    #print("Welcome to Pirate's Quest!")
+    num_areas = 5
+    game_map = generate_random_map(num_areas)
     #player_name = input("Enter a player name:  ")
-    printMap(random_map)
-    #current_area = setStartArea(random_map)
-    #player = Player(current_area)
-    #gameStart(current_area, player)
+    printMap(game_map)
+    current_area = setStartArea(game_map)
+    player = Player(current_area)
+    gameStart(current_area, player)
