@@ -7,11 +7,19 @@ from termcolor import colored
 
 def checkIfPlayerWon():
     visited_areas = 0
+    consumed_areas = 0
     for area_name in game_map:
         if game_map[area_name]['visited']:
             visited_areas += 1
-    if visited_areas == len(game_map):
-        print('Oy!  You visited EVERY AREA OF THE MAP!')
+        if game_map[area_name]['consumed']:
+            consumed_areas += 1
+    if visited_areas == len(game_map) and consumed_areas == len(game_map):
+        print('Oy!  You visited and consumed EVERY AREA OF THE MAP!')
+        print('This is the best you can possibly do!')
+        return True
+    elif visited_areas == len(game_map) and consumed_areas < len(game_map):
+        print('Oy!  You visited, but did not consume every area of the map!')
+        print('This is ok, but you could have done better.')
         return True
     else:
         return False
@@ -32,12 +40,12 @@ def gameStart(current_area, player):
                 print('> Your energy might go up when in these areas.')
                 open_water_first_time = False
             #print('Visited Status: ' +str(game_map[current_area]['visited']))
-            if game_map[current_area]['visited']:
+            if game_map[current_area]['consumed']:
                 print("> You've already absorbed the energy from this relaxing place.")
                 print(">    No energy is awarded.")
             else:
                 if player.energy != 100:
-                    game_map[current_area].updated_visited(True)
+                    game_map[current_area].update_consumed(True)
                 playerEnergy('award', player)
             #playerEnergy('award', player)
         elif game_map[current_area]['area_type'] == 'Treasure':
@@ -45,25 +53,25 @@ def gameStart(current_area, player):
                 print('> You found a Treasure area!')
                 print('> Your gold might go up when in these areas.')
                 treasure_first_time = False
-            if game_map[current_area]['visited']:
+            if game_map[current_area]['consumed']:
                 print("> You already found the gold in this area.")
                 print(">    No gold is awarded.")
             else:
                 playerGold('award', player)
-                game_map[current_area].updated_visited(True)
+                game_map[current_area].update_consumed(True)
         elif game_map[current_area]['area_type'] == 'Maelstrom':
             if maelstrom_first_time:
                 print('> Oh no! You have encountered a Maelstrom!')
                 print("> Not good.  It's going to take energy to escape and some gold always goes overboard...")
                 maelstrom_first_time = False
-            if game_map[current_area]['visited']:
+            if game_map[current_area]['consumed']:
                 print("> The storm has passed in this area.")
                 print(">    Good news is you don't lose anything.")
                 print(">    Bad news is")
             else:
                 playerGold('strip', player)
                 playerEnergy('strip', player)
-                game_map[current_area].updated_visited(True)
+                game_map[current_area].update_consumed(True)
                 if playerOutOfEnergy(player):
                     print(f'You breathed your last breath, {player.player_name}.')
                     print('You died.  rip.')
@@ -79,7 +87,7 @@ def gameStart(current_area, player):
                 print("> There's always a chance you'll find gold on an island!")
                 print("> But leaving the ship is risky as you might get raided while you're gone.")
                 island_first_time = False
-            if game_map[current_area]['visited']:
+            if game_map[current_area]['consumed']:
                 print("> You've already searched this island")
                 print(">    Nothing to see here.")
             else:
@@ -93,12 +101,13 @@ def gameStart(current_area, player):
                     else:
                         print('Rekt.  While you searched for gold, you were ' + colored("raided","red"))
                         playerGold('strip', player)
-                    game_map[current_area].updated_visited(True)
+                    game_map[current_area].update_consumed(True)
                     print(f'\n***You are still in {current_area}')
                 else:
                     print("Guess we'll never know what was out there...")
                     print(f'\n***You are still in {current_area}')
 
+        game_map[current_area].update_visited(True)
 
         options = ', '.join(game_map[current_area]['connections'].keys())
         print('Available directions:', colored(options, "red"))
@@ -129,7 +138,7 @@ def gameStart(current_area, player):
 
 if __name__ == "__main__":
     # Generate a map with num_areas rooms and connect them
-    num_areas = 50
+    num_areas = 5
     game_map = generate_random_map(num_areas)
     #player_name = input("Enter a player name:  ")
     #printMap(game_map)

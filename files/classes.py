@@ -47,12 +47,13 @@ class Enemy:
         self.enemy_type = _enemy_type
 
 class Area:
-    def __init__(self, _area_type=None, _coordinates=None, _visited=False):
+    def __init__(self, _area_type=None, _coordinates=None, _visited=False, _consumed=False):
         self.area_type=_area_type
         self.connections= {}
         self.secret_area_connections= {}
         self.coordinates=_coordinates
         self.visited=_visited
+        self.consumed=_consumed
 
     def __getitem__(self, key):
         return self.__dict__[key]
@@ -65,5 +66,7 @@ class Area:
         self.secret_area_connections=_secret_area_connections
     def update_coordinates(self, _coordinates):
         self.coordinates=_coordinates
-    def updated_visited(self, _visited):
+    def update_visited(self, _visited):
         self.visited = _visited
+    def update_consumed(self, _consumed):
+        self.consumed = _consumed

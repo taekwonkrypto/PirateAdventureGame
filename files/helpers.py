@@ -99,11 +99,16 @@ def playerStatus(_player, _game_map):
         for item in _player.inventory:
             print(f'*** - {item}')
     visited_areas = 0
+    consumed_areas = 0
     for area_name in _game_map:
         if _game_map[area_name]['visited']:
             visited_areas += 1
+        if _game_map[area_name]['consumed']:
+            consumed_areas += 1
     percent_map_visited = round((visited_areas/len(_game_map))*100)
+    percent_map_consumed = round((consumed_areas / len(_game_map)) * 100)
     print(f'*** Areas Visited: {visited_areas} ({percent_map_visited}% of the map)')
+    print(f'*** Areas Used: {consumed_areas} ({percent_map_consumed}% of the map)')
     print('*********************************')
 
 def playerOutOfEnergy(_player):
