@@ -23,8 +23,6 @@ def gameStart(current_area, player):
     island_first_time = True
     while True:
         area_color = getItemColor(game_map[current_area]['area_type'])
-        game_map[current_area].updated_visited(True)
-
         print("\n+++ You are in " + colored(current_area,"cyan") + ", a " + colored(game_map[current_area]['area_type'], area_color) + " Area.")
 
         if game_map[current_area]['area_type'] == 'Open Water':
@@ -33,49 +31,74 @@ def gameStart(current_area, player):
                 print('> No enemies in site you and your crew can finally recharge.')
                 print('> Your energy might go up when in these areas.')
                 open_water_first_time = False
-            playerEnergy('award', player)
+            #print('Visited Status: ' +str(game_map[current_area]['visited']))
+            if game_map[current_area]['visited']:
+                print("> You've already absorbed the energy from this relaxing place.")
+                print(">    No energy is awarded.")
+            else:
+                if player.energy != 100:
+                    game_map[current_area].updated_visited(True)
+                playerEnergy('award', player)
+            #playerEnergy('award', player)
         elif game_map[current_area]['area_type'] == 'Treasure':
             if treasure_first_time:
                 print('> You found a Treasure area!')
                 print('> Your gold might go up when in these areas.')
                 treasure_first_time = False
-            playerGold('award', player)
+            if game_map[current_area]['visited']:
+                print("> You already found the gold in this area.")
+                print(">    No gold is awarded.")
+            else:
+                playerGold('award', player)
+                game_map[current_area].updated_visited(True)
         elif game_map[current_area]['area_type'] == 'Maelstrom':
             if maelstrom_first_time:
                 print('> Oh no! You have encountered a Maelstrom!')
                 print("> Not good.  It's going to take energy to escape and some gold always goes overboard...")
                 maelstrom_first_time = False
-            playerGold('strip', player)
-            playerEnergy('strip', player)
-            if playerOutOfEnergy(player):
-                print(f'You breathed your last breath, {player.player_name}.')
-                print('You died.  rip.')
-                break
-            if playerOutOfGold(player):
-                print(f'You ran out of gold to pay your pirates, {player.player_name}')
-                print('Mutiny insued and you died')
-                print('rip')
-                break
+            if game_map[current_area]['visited']:
+                print("> The storm has passed in this area.")
+                print(">    Good news is you don't lose anything.")
+                print(">    Bad news is")
+            else:
+                playerGold('strip', player)
+                playerEnergy('strip', player)
+                game_map[current_area].updated_visited(True)
+                if playerOutOfEnergy(player):
+                    print(f'You breathed your last breath, {player.player_name}.')
+                    print('You died.  rip.')
+                    break
+                if playerOutOfGold(player):
+                    print(f'You ran out of gold to pay your pirates, {player.player_name}')
+                    print('Mutiny insued and you died')
+                    print('rip')
+                    break
         elif game_map[current_area]['area_type'] == 'Island':
             if island_first_time:
                 print('> Sweet! Land!')
                 print("> There's always a chance you'll find gold on an island!")
                 print("> But leaving the ship is risky as you might get raided while you're gone.")
                 island_first_time = False
-            decision = checkYorN(input("Do you want to search the island for treasure (y/n)? "))
-            if decision == 'y':
-                print("Good luck!")
-                find_gold = random.choice([True, False])
-                if find_gold:
-                    print('Nice!  You found ' + colored("gold!","yellow"))
-                    playerGold('award', player)
-                else:
-                    print('Rekt.  While you searched for gold, you were ' + colored("raided","red"))
-                    playerGold('strip', player)
-                print(f'\n***You are still in {current_area}')
+            if game_map[current_area]['visited']:
+                print("> You've already searched this island")
+                print(">    Nothing to see here.")
             else:
-                print("Guess we'll never know what was out there...")
-                print(f'\n***You are still in {current_area}')
+                decision = checkYorN(input("Do you want to search the island for treasure (y/n)? "))
+                if decision == 'y':
+                    print("Good luck!")
+                    find_gold = random.choice([True, False])
+                    if find_gold:
+                        print('Nice!  You found ' + colored("gold!","yellow"))
+                        playerGold('award', player)
+                    else:
+                        print('Rekt.  While you searched for gold, you were ' + colored("raided","red"))
+                        playerGold('strip', player)
+                    game_map[current_area].updated_visited(True)
+                    print(f'\n***You are still in {current_area}')
+                else:
+                    print("Guess we'll never know what was out there...")
+                    print(f'\n***You are still in {current_area}')
+
 
         options = ', '.join(game_map[current_area]['connections'].keys())
         print('Available directions:', colored(options, "red"))
