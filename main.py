@@ -26,24 +26,52 @@ def gameStart(current_area, player):
     maelstrom_first_time = True
     island_first_time = True
     while True:
-        os.system('clear')
         area_color = getItemColor(game_map[current_area]['area_type'])
-        game_map[current_area]['visited'] = True
+        game_map[current_area].updated_visited(True)
         player_won = checkIfPlayerWon()
         if player_won:
             print("Wow!  You won!")
             break
 
-        print("You are in " + colored(current_area,"cyan") + ", a " + colored(game_map[current_area]['area_type'], area_color) + " Area.")
+        print("\n+++ You are in " + colored(current_area,"cyan") + ", a " + colored(game_map[current_area]['area_type'], area_color) + " Area.")
+
+        if game_map[current_area]['area_type'] == 'Open Water':
+            if open_water_first_time:
+                print('> Open Water is so relaxing. ')
+                print('> No enemies in site you and your crew can finally recharge.')
+                print('> Your energy might go up when in these areas.')
+                open_water_first_time = False
+            playerEnergy('award', player)
+        elif game_map[current_area]['area_type'] == 'Treasure':
+            if treasure_first_time:
+                print('> You found a Treasure area!')
+                print('> Your gold might go up when in these areas.')
+                treasure_first_time = False
+            playerGold('award', player)
+        elif random_map[current_area]['area_type'] == 'Maelstrom':
+            if maelstrom_first_time:
+                print('> Oh no! You have encountered a Maelstrom!')
+                print("> Not good.  It's going to take energy to escape and some gold always goes overboard...")
+                maelstrom_first_time = False
+            playerGold('strip')
+            playerEnergy('strip')
+            if playerOutOfEnergy(player):
+                print(f'You breathed your last breath, {player.player_name}.')
+                print('You died.  rip.')
+                break
+            if playerOutOfGold(player):
+                print(f'You ran out of gold to pay your pirates, {player.player_name}')
+                print('Mutiny insued and you died')
+                print('rip')
+                break
 
         options = ', '.join(game_map[current_area]['connections'].keys())
-        # print('Available directions:', ', '.join(random_map[current_area]['connections'].keys()))
         print('Available directions:', colored(options, "red"))
 
         if game_map[current_area]['secret_area_connections']:
             print('You sense a hidden path in one direction...')
 
-        direction = input('Enter a direction (above) to move, or "quit" to exit: ').strip().lower()
+        direction = input('Enter a direction (above) to move, "quit" to exit, or "status" to view your progress: ').strip().lower()
 
         if direction == 'quit':
             print('Thanks for playing!')
@@ -54,15 +82,17 @@ def gameStart(current_area, player):
         elif direction in game_map[current_area]['secret_area_connections']:
             print("You've discovered a hidden path!")
             current_area = game_map[current_area]['secret_area_connections'][direction]
+        elif direction == 'status':
+            playerStatus(player, game_map)
         else:
-            print('You cannot go that way.')
+            print("\n*** You cannot go " + colored(direction, "red") + "\n")
 
 if __name__ == "__main__":
     # Generate a map with num_areas rooms and connect them
-    num_areas = 5
+    num_areas = 50
     game_map = generate_random_map(num_areas)
     #player_name = input("Enter a player name:  ")
-    printMap(game_map)
+    #printMap(game_map)
     current_area = setStartArea(game_map)
     player = Player(current_area)
     gameStart(current_area, player)
