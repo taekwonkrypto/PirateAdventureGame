@@ -3,7 +3,7 @@ from files.lists import battle_fighters
 
 class Player:
     def __init__(self,  _location=None,\
-                        _player_name="Captain Captain",\
+                        _player_name="Captain",\
                         _energy=100, \
                         _gold=250,
                         _inventory=[],

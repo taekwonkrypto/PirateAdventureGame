@@ -48,13 +48,13 @@ def gameStart(current_area, player):
                 print('> Your gold might go up when in these areas.')
                 treasure_first_time = False
             playerGold('award', player)
-        elif random_map[current_area]['area_type'] == 'Maelstrom':
+        elif game_map[current_area]['area_type'] == 'Maelstrom':
             if maelstrom_first_time:
                 print('> Oh no! You have encountered a Maelstrom!')
                 print("> Not good.  It's going to take energy to escape and some gold always goes overboard...")
                 maelstrom_first_time = False
-            playerGold('strip')
-            playerEnergy('strip')
+            playerGold('strip', player)
+            playerEnergy('strip', player)
             if playerOutOfEnergy(player):
                 print(f'You breathed your last breath, {player.player_name}.')
                 print('You died.  rip.')

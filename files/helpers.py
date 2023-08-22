@@ -35,7 +35,7 @@ def goldDecision(_player, _new_gold):
         else:
             return updated_gold
 def energyDecision(_player, _new_energy):
-    updated_energy = player.energy + _new_energy
+    updated_energy = _player.energy + _new_energy
     if _new_energy > 0:
         if updated_energy >= 100:
             return 100
@@ -62,7 +62,7 @@ def playerEnergy(_option, _player):
         if _player.energy >= 0:
             energy_lost = random.randint(5, 20)
             energy_lost *= -1
-            new_energy = energyDecision(player, energy_lost)
+            new_energy = energyDecision(_player, energy_lost)
             _player.update_energy(new_energy)
             print('Your new energy amount is ' + colored(_player.energy, "light_yellow"))
     else:
@@ -83,7 +83,7 @@ def playerGold(_option, _player):
         if _player.gold >= 0:
             gold_lost = random.randint(10, 50)
             gold_lost *= -1
-            new_gold = goldDecision(player, gold_lost)
+            new_gold = goldDecision(_player, gold_lost)
             _player.update_gold(new_gold)
             print('Your new gold amount is ' + colored(_player.gold,"light_yellow"))
     else:

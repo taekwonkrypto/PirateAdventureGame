@@ -37,10 +37,25 @@ def generate_random_map(_num_areas):
     unvisited_areas.remove(current_area) # REMOVE THE AREA WE ARE IN, BECAUSE WE HAVE VISITED IT.
     coordinates = [0,0] # NEEDED THIS TO MAKE SURE I HANDLE GOING BACK INTO AN AREA PROPERLY
     while unvisited_areas:
+        #visited_areas.append(current_area)
+        #unvisited_areas.remove(current_area)
         #areas[current_area]['coordinates'] = coordinates
         areas[current_area].update_coordinates(coordinates)
-        if areas[current_area]['connections'].keys(): # IF THE CURRENT AREA ALREADY HAS A CONNECTION
+        if len(areas[current_area]['connections'].keys()) == 4:
+            direction = random.choice(area_directions)
+            #print(f'current_area is: {current_area}')
+            #print(f'direction chose from current_area was {direction}')
+            #print(f'and that direction leads to this area:')
+            #print(areas[current_area]['connections'][direction])
+            next_area = areas[current_area]['connections'][direction]
+            areas[next_area].update_coordinates(coordinates)
+            if next_area not in visited_areas:
+                visited_areas.append(next_area)
+            current_area = next_area
+            #input('press any key to continue')
+        elif areas[current_area]['connections'].keys(): # IF THE CURRENT AREA ALREADY HAS A CONNECTION
             # GET A DIRECTION NOT USED IN CURRENT AREA
+            #while
             direction = random.choice(list(set(area_directions) - set(areas[current_area]['connections'].keys())))
             coordinates = getDirectionCoordinates(areas, current_area, direction)
             match_found = False # NEED TO SEARCH IF THE NEW SELECTION IS CONNECTED TO ANOTHER ROOM ALREADY
@@ -62,7 +77,6 @@ def generate_random_map(_num_areas):
             direction = random.choice(area_directions)
             coordinates = getDirectionCoordinates(areas, current_area, direction)
             next_area = random.choice(unvisited_areas)
-            #areas[next_area]['coordinates'] = coordinates
             areas[next_area].update_coordinates(coordinates)
             visited_areas.append(next_area)
             unvisited_areas.remove(next_area)
