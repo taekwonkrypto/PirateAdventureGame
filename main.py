@@ -8,12 +8,8 @@ from termcolor import colored
 def checkIfPlayerWon():
     visited_areas = 0
     for area_name in game_map:
-        #print(f'** {area_name}')
         if game_map[area_name]['visited']:
-            #print(f'You have visited {area_name}')
             visited_areas += 1
-    percent_map_visited = round((visited_areas/len(game_map))*100)
-    #print(f'You have visited {percent_map_visited}% of the map!')
     if visited_areas == len(game_map):
         print('Oy!  You visited EVERY AREA OF THE MAP!')
         return True
@@ -28,10 +24,6 @@ def gameStart(current_area, player):
     while True:
         area_color = getItemColor(game_map[current_area]['area_type'])
         game_map[current_area].updated_visited(True)
-        player_won = checkIfPlayerWon()
-        if player_won:
-            print("Wow!  You won!")
-            break
 
         print("\n+++ You are in " + colored(current_area,"cyan") + ", a " + colored(game_map[current_area]['area_type'], area_color) + " Area.")
 
@@ -64,6 +56,26 @@ def gameStart(current_area, player):
                 print('Mutiny insued and you died')
                 print('rip')
                 break
+        elif game_map[current_area]['area_type'] == 'Island':
+            if island_first_time:
+                print('> Sweet! Land!')
+                print("> There's always a chance you'll find gold on an island!")
+                print("> But leaving the ship is risky as you might get raided while you're gone.")
+                island_first_time = False
+            decision = checkYorN(input("Do you want to search the island for treasure (y/n)? "))
+            if decision == 'y':
+                print("Good luck!")
+                find_gold = random.choice([True, False])
+                if find_gold:
+                    print('Nice!  You found ' + colored("gold!","yellow"))
+                    playerGold('award', player)
+                else:
+                    print('Rekt.  While you searched for gold, you were ' + colored("raided","red"))
+                    playerGold('strip', player)
+                print(f'\n***You are still in {current_area}')
+            else:
+                print("Guess we'll never know what was out there...")
+                print(f'\n***You are still in {current_area}')
 
         options = ', '.join(game_map[current_area]['connections'].keys())
         print('Available directions:', colored(options, "red"))
@@ -86,6 +98,11 @@ def gameStart(current_area, player):
             playerStatus(player, game_map)
         else:
             print("\n*** You cannot go " + colored(direction, "red") + "\n")
+
+        player_won = checkIfPlayerWon()
+        if player_won:
+            print("Wow!  You won!")
+            break
 
 if __name__ == "__main__":
     # Generate a map with num_areas rooms and connect them

@@ -69,10 +69,11 @@ def playerEnergy(_option, _player):
         print(f'{_option} is not a recognized option in playerGold function.')
 
 def playerGold(_option, _player):
+    max_gold = 1000
     if _option == 'award':
-        if _player.gold == 750:
+        if _player.gold == max_gold:
             print(f'But you ship is at capacity, {_player.player_name}! ')
-        if _player.gold < 750:
+        if _player.gold < max_gold:
             gold_gain = random.randint(10, 50)
             new_gold = goldDecision(_player, gold_gain)
             _player.update_gold(new_gold)
@@ -116,3 +117,12 @@ def playerOutOfGold(_player):
         return True
     else:
         return False
+
+def checkYorN(_decision):
+    if _decision.lower() == 'y' or _decision.lower == 'n':
+        return _decision.lower()
+    else:
+        while _decision.lower() != 'y' and _decision.lower() != 'n':
+            print(f"'{_decision}' is not a valid input.")
+            _decision = input("Please enter 'y' or 'n' only (y/n): ")
+        return _decision.lower()
