@@ -68,6 +68,15 @@ def playerEnergy(_option, _player):
     else:
         print(f'{_option} is not a recognized option in playerGold function.')
 
+def checkInventory(_player):
+    number_of_enemies_captured = 0
+    for item in battle_fighters:
+        if item in _player.inventory:
+            number_of_enemies_captured += 1
+    print('You have collected ' + str(number_of_enemies_captured) + ' enemies, out of ' + str(len(battle_fighters)))
+    if number_of_enemies_captured == len(battle_fighters):
+        _player.update_winner(True)
+
 def playerGold(_option, _player):
     max_gold = 1000
     if _option == 'award':
@@ -109,10 +118,11 @@ def playerStatus(_player, _game_map):
     percent_map_consumed = round((consumed_areas / len(_game_map)) * 100)
     print(f'*** Areas Visited: {visited_areas} ({percent_map_visited}% of the map)')
     print(f'*** Areas Used: {consumed_areas} ({percent_map_consumed}% of the map)')
+    print('*** Available fighters: ', ', '.join(_player.fighters))
     print('*********************************')
 
-def playerOutOfEnergy(_player):
-    if _player.energy <= 0:
+def outOfEnergy(_figther):
+    if _figther.energy <= 0:
         return True
     else:
         return False

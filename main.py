@@ -4,6 +4,7 @@ from mapgeneration import *
 from files.classes import *
 from files.helpers import *
 from termcolor import colored
+from battle import *
 
 def checkIfPlayerWon():
     visited_areas = 0
@@ -106,14 +107,30 @@ def gameStart(current_area, player):
                 else:
                     print("Guess we'll never know what was out there...")
                     print(f'\n***You are still in {current_area}')
-
+        elif game_map[current_area]['area_type'] == 'Battle':
+            if game_map[current_area]['consumed']:
+                print('You already battled in this area!')
+            else:
+                playerBattle(player, game_map, current_area)
+                #print('*** exited player battle:')
+                #print('*** Your inventory:')
+                #for item in player.inventory:
+                #    print(item)
+            #checkInventory(player)
+            #if player.winner:
+            #    print('Congratulations!  You collected all enemies and WON!')
+            #   input('Press any key to continue...')
+            #    break
+        if outOfEnergy(player):
+            print(f'gg.')
+            break
         game_map[current_area].update_visited(True)
 
         options = ', '.join(game_map[current_area]['connections'].keys())
         print('Available directions:', colored(options, "red"))
 
         if game_map[current_area]['secret_area_connections']:
-            print('You sense a hidden path in one direction...')
+            print('You sense a ' + colored("hidden path","yellow") + ' in one direction...')
 
         direction = input('Enter a direction (above) to move, "quit" to exit, or "status" to view your progress: ').strip().lower()
 
@@ -124,7 +141,7 @@ def gameStart(current_area, player):
         if direction in game_map[current_area]['connections']:
             current_area = game_map[current_area]['connections'][direction]
         elif direction in game_map[current_area]['secret_area_connections']:
-            print("You've discovered a hidden path!")
+            print("You've discovered a " + colored("hidden path","yellow") + "!")
             current_area = game_map[current_area]['secret_area_connections'][direction]
         elif direction == 'status':
             playerStatus(player, game_map)
@@ -133,12 +150,12 @@ def gameStart(current_area, player):
 
         player_won = checkIfPlayerWon()
         if player_won:
-            print("Wow!  You won!")
+            print("gg.")
             break
 
 if __name__ == "__main__":
     # Generate a map with num_areas rooms and connect them
-    num_areas = 5
+    num_areas = 20
     game_map = generate_random_map(num_areas)
     #player_name = input("Enter a player name:  ")
     #printMap(game_map)

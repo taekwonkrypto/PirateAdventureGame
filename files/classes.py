@@ -7,6 +7,7 @@ class Player:
                         _energy=100, \
                         _gold=250,
                         _inventory=[],
+                        _fighters=[],
                         _winner=False) -> object:
 
         self.player_name = _player_name
@@ -14,6 +15,7 @@ class Player:
         self.gold = _gold
         self.location = _location
         self.inventory = _inventory
+        self.fighters = _fighters
         self.winner = _winner
 
     def update_player_name(self, _player_name):
@@ -30,6 +32,8 @@ class Player:
         self.location = _location
     def add_to_inventory(self, _item):
         self.inventory.append(_item)
+    def add_to_fighters(self, _item):
+        self.fighters.append(_item)
     def update_winner(self, _status):
         self.winner = _status
 
