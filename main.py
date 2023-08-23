@@ -22,6 +22,9 @@ def checkIfPlayerWon():
         print('Oy!  You visited, but did not consume every area of the map!')
         print('This is ok, but you could have done better.')
         return True
+    elif len(player.fighters) == len(battle_fighters):
+        print('Congratulations!  You have captured ALL FIGHTERS and now RULE THE OPEN SEA')
+        return True
     else:
         return False
 
@@ -112,15 +115,6 @@ def gameStart(current_area, player):
                 print('You already battled in this area!')
             else:
                 playerBattle(player, game_map, current_area)
-                #print('*** exited player battle:')
-                #print('*** Your inventory:')
-                #for item in player.inventory:
-                #    print(item)
-            #checkInventory(player)
-            #if player.winner:
-            #    print('Congratulations!  You collected all enemies and WON!')
-            #   input('Press any key to continue...')
-            #    break
         if outOfEnergy(player):
             print(f'gg.')
             break
@@ -155,7 +149,7 @@ def gameStart(current_area, player):
 
 if __name__ == "__main__":
     # Generate a map with num_areas rooms and connect them
-    num_areas = 20
+    num_areas = 100
     game_map = generate_random_map(num_areas)
     #player_name = input("Enter a player name:  ")
     #printMap(game_map)
