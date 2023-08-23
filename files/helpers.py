@@ -100,7 +100,7 @@ def playerGold(_option, _player):
         print(f'{_option} is not a recognized option in playerGold function.')
 
 def playerStatus(_player, _game_map):
-    print('********** PLAYER STATS ***********')
+    print('\n********** PLAYER STATS ***********')
     print(f'*** Gold: {_player.gold}')
     print(f'*** Energy: {_player.energy}')
     if _player.inventory:
@@ -120,6 +120,7 @@ def playerStatus(_player, _game_map):
     print(f'*** Areas Used: {consumed_areas} ({percent_map_consumed}% of the map)')
     print('*** Available fighters: ', ', '.join(_player.fighters))
     print('*********************************')
+    input("   press any key to continue...   > ")
 
 def outOfEnergy(_figther):
     if _figther.energy <= 0:

@@ -35,18 +35,23 @@ def gameStart(current_area, player):
     island_first_time = True
     while True:
         area_color = getItemColor(game_map[current_area]['area_type'])
-        print("\n+++ You are in " + colored(current_area,"cyan") + ", a " + colored(game_map[current_area]['area_type'], area_color) + " Area.")
-
+        print("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+        print("+++ You are in " + colored(current_area,"cyan") + ", a " + colored(game_map[current_area]['area_type'], area_color) + " Area.")
+        print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         if game_map[current_area]['area_type'] == 'Open Water':
             if open_water_first_time:
-                print('> Open Water is so relaxing. ')
-                print('> No enemies in site you and your crew can finally recharge.')
-                print('> Your energy might go up when in these areas.')
+                print('><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><')
+                print('> Open Water is so relaxing.                                   <')
+                print('> No enemies in site you and your crew can finally recharge.   <')
+                print('> Your energy might go up when in these areas.                 <')
+                print('><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><')
                 open_water_first_time = False
             #print('Visited Status: ' +str(game_map[current_area]['visited']))
             if game_map[current_area]['consumed']:
-                print("> You've already absorbed the energy from this relaxing place.")
-                print(">    No energy is awarded.")
+                print('][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][')
+                print("] You've already absorbed the energy from this relaxing place. [")
+                print("]   No energy is awarded.                                      [")
+                print('][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][')
             else:
                 if player.energy != 100:
                     game_map[current_area].update_consumed(True)
@@ -54,23 +59,31 @@ def gameStart(current_area, player):
             #playerEnergy('award', player)
         elif game_map[current_area]['area_type'] == 'Treasure':
             if treasure_first_time:
-                print('> You found a Treasure area!')
-                print('> Your gold might go up when in these areas.')
+                print('><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><')
+                print('> You found a Treasure area!                                   <')
+                print('> Your gold might go up when in these areas.                   <')
+                print('><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><')
                 treasure_first_time = False
             if game_map[current_area]['consumed']:
-                print("> You already found the gold in this area.")
-                print(">    No gold is awarded.")
+                print('][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][')
+                print("] You already found the gold in this area.                     [")
+                print("]    No gold is awarded.                                       [")
+                print('][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][')
             else:
                 playerGold('award', player)
                 game_map[current_area].update_consumed(True)
         elif game_map[current_area]['area_type'] == 'Maelstrom':
             if maelstrom_first_time:
-                print('> Oh no! You have encountered a Maelstrom!')
-                print("> Not good.  It's going to take energy to escape and some gold always goes overboard...")
+                print('><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><')
+                print('> Oh no! You have encountered a Maelstrom!                     <')
+                print("> You'll burn energy to escape and gold always goes overboard. <")
+                print('><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><')
                 maelstrom_first_time = False
             if game_map[current_area]['consumed']:
-                print("> The storm has passed in this area.")
-                print(">    Good news is you don't lose anything.")
+                print('][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][')
+                print("] The storm has passed in this area.                           [")
+                print("]    Good news is you don't lose anything.                     [")
+                print('][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][')
             else:
                 playerGold('strip', player)
                 playerEnergy('strip', player)
