@@ -177,22 +177,31 @@ def playerBattle(_player, _game_map, _current_area):
         #if _player.inventory and _player.gold > 100:
         if canPlayerSummon(_player):
             attack_choice = input("1:sword | 2:cannon | 3:summon > ")
+            if attack_choice == '1':
+                damage = pirate_sword()
+            elif attack_choice == '2':
+                damage = pirate_cannon()
+            elif attack_choice == '3':
+                damage = pirate_summon(_player)
+                print(f'Dealing ' + colored(damage, "red") + ' damage. ')
+                print('Your updated gold amount is: ' + colored(_player.gold, "yellow"))
+            else:
+                print("Invalid choice. Consider what you enter next time. ")
+                print("Pirate's turn skipped.")
+                damage = 0
         else:
-            attack_choice = input("1:sword | 2:cannon> ")
-        if attack_choice == '1':
-            damage = pirate_sword()
-        elif attack_choice == '2':
-            damage = pirate_cannon()
-        elif attack_choice == '3':
-            damage = pirate_summon(_player)
-            print(f'Dealing ' + colored(damage, "red") + ' damage. ')
-            print('Your updated gold amount is: ' + colored(_player.gold,"yellow"))
-        else:
-            print("Invalid choice. Pirate's turn skipped.")
-            damage = 0
+            attack_choice = input("1:sword | 2:cannon > ")
+            if attack_choice == '1':
+                damage = pirate_sword()
+            elif attack_choice == '2':
+                damage = pirate_cannon()
+            else:
+                print("Invalid choice. Pirate's turn skipped.")
+                damage = 0
 
         enemy_energy = enemy.energy - damage
         enemy.update_energy(enemy_energy)
+        print('------------------')
         print(colored(enemy.enemy_type, enemy_color) + " took " + colored(damage,"red") +
               " damage and now has " + colored(enemy.energy, "yellow"))
 

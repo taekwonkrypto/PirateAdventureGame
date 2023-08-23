@@ -71,12 +71,11 @@ def gameStart(current_area, player):
             if game_map[current_area]['consumed']:
                 print("> The storm has passed in this area.")
                 print(">    Good news is you don't lose anything.")
-                print(">    Bad news is")
             else:
                 playerGold('strip', player)
                 playerEnergy('strip', player)
                 game_map[current_area].update_consumed(True)
-                if playerOutOfEnergy(player):
+                if outOfEnergy(player):
                     print(f'You breathed your last breath, {player.player_name}.')
                     print('You died.  rip.')
                     break
