@@ -200,7 +200,7 @@ def playerBattle(_player, _game_map, _current_area):
                 damage = 0
 
         enemy_energy = enemy.energy - damage
-        enemy.update_energy(enemy_energy)
+        enemy.update_energy(max(0,enemy_energy))
         print('------------------')
         print(colored(enemy.enemy_type, enemy_color) + " took " + colored(damage,"red") +
               " damage and now has " + colored(enemy.energy, "yellow"))
@@ -219,7 +219,7 @@ def playerBattle(_player, _game_map, _current_area):
 
         damage = enemy_attack(enemy.enemy_type)
         pirate_energy = _player.energy - damage
-        _player.update_energy(pirate_energy)
+        _player.update_energy(max(0,pirate_energy))
         print("You took " + colored(damage, "red") +
               " damage and now have " + colored(_player.energy, "green"))
 

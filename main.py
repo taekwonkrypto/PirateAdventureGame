@@ -127,6 +127,12 @@ def gameStart(current_area, player):
                 print('You already battled in this area!')
             else:
                 playerBattle(player, game_map, current_area)
+                #game map consumed is handled in playerBattle, not here.
+        elif game_map[current_area]['area_type'] == 'Secret Area':
+            print('Oooo...a secret area!  Nice.')
+            print('Maybe something worth finding will be here one day.')
+            game_map[current_area].update_consumed(True)
+            game_map[current_area].update_visited(True)
         if outOfEnergy(player):
             print(f'gg.')
             break

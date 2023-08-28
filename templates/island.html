@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>A Memeland Text Adventure Game</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body id="island">
+    <h1>Memeland Text Adventure Game</h1>
+    <div id="game_information">
+        <div class="align_paragraph_text">
+            <p id="welcome">You are currently in: <span style="font-weight:600;">{{ player.location }}</span></p>
+            <p id="welcome">This is a <span style="font-weight:600;">{{ area_type }}</span> Area</p>
+            <p id="message">{{ message|safe }}</p>
+        </div>
+        <div id="island_div" class="align_paragraph_text">
+            <b></b><p id="notes">{{ notes|safe }}</p></b>
+            {% if not choice_made %}
+            <form method="POST" action="/explore">
+                <label>Do you want to explore the island?</label>
+                <input type="radio" name="explore_choice" value="yes"> Yes
+                <input type="radio" name="explore_choice" value="no"> No
+                <input type="submit" value="Submit">
+            </form>
+            {% else %}
+            <form method="POST" action="/play">
+                <button type="submit" name="island_button_continue">Press to Continue</button>
+            </form>
+            {% endif %}
+       </div>
+   </div>
+</body>
+</html>

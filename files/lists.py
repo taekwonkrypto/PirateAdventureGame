@@ -4,6 +4,7 @@ area_directions = ['north', 'south', 'west', 'east']
 # Define possible area types
 area_types = ['Open Water', 'Treasure', 'Maelstrom', 'Battle', 'Island']
 #area_types = ['Open Water', 'Battle']
+#area_types = ['Open Water', 'Island']
 
 area_names = [
     "Mystic Bay", "Shark's Den", "Golden Sands", "Shipwreck Cove",

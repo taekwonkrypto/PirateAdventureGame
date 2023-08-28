@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>A Memeland Text Adventure Game</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        {% if area_type == 'Island' %}
+        body {background-image: url('/static/images/island.jpg');background-color: #666}
+        {% elif area_type == 'Battle' %}
+        body {background-image: url('/static/images/pirate-ship.jpg');background-color: #666}
+        {% elif area_type == 'Maelstrom' %}
+        body {background-image: url('/static/images/red-storm.jpg');background-color: #666}
+        {% elif area_type == 'Open Water' %}
+        body {background-image: url('/static/images/open-water.jpg');background-color: #666}
+        {% elif area_type == 'Treasure' %}
+        body {background-image: url('/static/images/treasure.jpg');background-color: #666}
+        {% endif %}
+    </style>
+</head>
+<body>
+    <h1>A Memeland Inspired Fan Game</h1>
+    <div id="game_information">
+        <div class="align_paragraph_text">
+            <p id="welcome">You are currently in: <span style="font-weight:600;">{{ player.location }}</span></p>
+            <p id="welcome">This is a <span style="font-weight:600;">{{ area_type }}</span> Area</p>
+            <p id="directions">Your options are: <span style="font-weight:600;">{{ direction_options }}</span></p>
+            <p id="message">{{ message|safe }}</p>
+            <p id="notes">{{ notes|safe }}</p>
+        </div>
+        <div id="battle_div" class="align_paragraph_text">
+            <p id="player_stats" class="bold">Player Information</p>
+            <form method="post" action="{{ url_for('play') }}">
+                <input type="text" name="user_input" autofocus>
+                <input type="submit" value="Submit">
+            </form>
+       </div>
+        <div class="align_paragraph_text">
+            <p id="player_stats" class="bold">Player Information</p>
+            <p id="player_stats">{{ player.player_name }}</p>
+            <p id="player_stats">Energy: <b>{{ player.energy }}</b></p>
+            <p id="player_stats">Gold: <b>{{ player.gold }}</b></p>
+            <ul>
+            {% if player.fighters %}
+                {% for fighters in player.fighters %}
+                    <li>{{fighters}}</li>
+                {% endfor %}
+            {% else %}
+                <li>You do not own any fighters...yet.</li>
+            {% endif %}
+            </ul>
+            <ul>
+            {% if player.inventory %}
+                {% for item in player.inventory %}
+                    <li>{{item}}</li>
+                {% endfor %}
+            {% else %}
+                <li>You do not have any items in your inventory.</li>
+            {% endif %}
+            </ul>
+            <p id="player_stats"># Visited Areas: {{ traverse_dictionary['visited_areas'] }} ({{ traverse_dictionary['percent_map_visited'] }}%)</p>
+            <p id="player_stats">% Map Consumed: {{ traverse_dictionary['consumed_areas'] }} ({{ traverse_dictionary['percent_map_consumed'] }}%)</p>
+        </div>
+        <div class="align_paragraph_text">
+            <p>game coordinates: {{ coordinates }}</p>
+        </div>
+    </div>
+</body>
+</html>
