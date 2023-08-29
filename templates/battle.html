@@ -4,6 +4,25 @@
     <title>A Memeland Text Adventure Game</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+    {% if enemy.enemy_type == 'Kraken' %}
+        body {background-image: url('/static/images/memeland-wallpaper-kraken.jpg');background-color: #666}
+    {% elif enemy.enemy_type == 'Shark' %}
+        body {background-image: url('/static/images/memeland-wallpaper-shark.jpg');background-color: #666}
+    {% endif %}
+    .container {
+        text-align: center; /* Optional: To center align the boxes within the container */
+    }
+    .box {
+      display: inline-block;
+      width: 45%; /* Adjust the width as needed */
+      margin: 10px; /* Add margin for spacing between boxes */
+      border: 1px solid #ccc; /* Optional: Add a border for visualization */
+      box-sizing: border-box; /* Optional: Include border in width calculation */
+      vertical-align: top;
+    }
+    .box p#player_stats {padding:0 !important;margin:0 !important}
+    </style>
 </head>
 <body id="battle">
     <h1>Memeland Text Adventure Game</h1>
@@ -15,11 +34,17 @@
         </div>
         <div id="battle_div" class="align_paragraph_text">
             <b></b><p id="notes">{{ notes|safe }}</p></b>
-            {% if not choice_made %}
-            <form method="POST" action="/explore">
+            {% if battle_active %}
+            <b><p id="notes">Attack Options:<br>{{ attack_options }}</p></b>
+            <form method="post" action="{{ url_for('battle') }}">
+                <input type="text" name="user_input_battle" autofocus>
+                <input type="submit" value="Submit">
+            </form>
+            {% elif not choice_made and player.energy > 0 and enemy.energy > 0 %}
+            <form method="POST" action="/battle">
                 <label>Do you want to fight?</label>
-                <input type="radio" name="explore_choice" value="yes"> Yes
-                <input type="radio" name="explore_choice" value="no"> No
+                <input type="radio" name="battle_explore_choice" value="yes"> Yes
+                <input type="radio" name="battle_explore_choice" value="no"> No
                 <input type="submit" value="Submit">
             </form>
             {% else %}
@@ -27,7 +52,29 @@
                 <button type="submit" name="battle_button_continue">Press to Continue</button>
             </form>
             {% endif %}
-       </div>
+        </div>
+        <div class="container">
+            <div class="box">
+                <p id="player_stats" class="bold">Player Information</p>
+                <p id="player_stats">{{ player.player_name }}</p>
+                <p id="player_stats">Energy: <b>{{ player.energy }}</b></p>
+                <p id="player_stats">Gold: <b>{{ player.gold }}</p>
+
+                {% if player.fighters %}
+                    <p id="player_stats">Fighters:</p>
+                    {% for fighters in player.fighters %}
+                        <p id="player_stats">{{fighters}}</p>
+                    {% endfor %}
+                {% else %}
+                    <p id="player_stats">You do not own any fighters...yet.</p>
+                {% endif %}
+            </div>
+            <div class="box">
+                <p id="player_stats" class="bold">Enemy Information</p>
+                <p id="player_stats">{{ enemy.enemy_type }}</p>
+                <p id="player_stats">Energy: <b>{{ enemy.energy }}</b></p>
+            </div>
+        </div>
    </div>
 </body>
 </html>

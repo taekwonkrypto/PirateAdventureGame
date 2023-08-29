@@ -5,17 +5,17 @@ import random
 
 def enemy_attack(_enemy_type):
     if (_enemy_type == 'Kraken' or _enemy_type == 'Shark'):
-        if random.random() < 0.5:  # 60% chance of hitting with a regular attack
+        if random.random() < 0.6:  # 60% chance of hitting with a regular attack
             return random.randint(10, 25)  # Regular attack damage
         else:
             return 0
     elif (_enemy_type == 'Kaiju' or _enemy_type == 'Kong'):
-        if random.random() < 0.6:  # 60% chance of hitting with a regular attack
+        if random.random() < 0.7:  # 60% chance of hitting with a regular attack
             return random.randint(15, 35)  # Regular attack damage
         else:
             return 0
     elif _enemy_type == 'Alien':
-        if random.random() < 0.7:  # 60% chance of hitting with a regular attack
+        if random.random() < 0.8:  # 60% chance of hitting with a regular attack
             return random.randint(20, 45)  # Regular attack damage
         else:
             return 0
@@ -107,6 +107,26 @@ def enemySummonOption(_player):
     #print(f'You summon options are: {options}')
     return options
 
+def enemySummonOptionAutoSelect(_player):
+    options = []
+
+    for item in _player.fighters:
+        if (item == 'Kraken' or item == 'Shark') and _player.gold >= 100:
+            # print(f'Added {item} to options')
+            options.append(item)
+        elif (item == 'Kaiju' or item == 'Kong') and _player.gold >= 200:
+            # print(f'Added {item} to options')
+            options.append(item)
+        elif item == 'Alien' and _player.gold >= 300:
+            # print(f'Added {item} to options')
+            options.append(item)
+        else:
+            print('Nothing to add.  Not good if you entered this ELSE clause in enemySummonOption')
+            return options
+    chosen_fighter = random.choice(options)
+
+    return chosen_fighter
+
 def validFighterSelection(_fighter_options):
     counter = 1
     counter_options = []
@@ -136,16 +156,16 @@ def getFighterDamage(_fighter):
         return random.randint(50, 85)
     elif (_fighter == 'Kaiju' or _fighter == 'Kong'):
         return random.randint(85, 125)
-    elif _creature == 'Alien':
+    elif _fighter == 'Alien':
         return random.randint(125, 200)
 
 def getFighterCost(_fighter):
     if (_fighter == 'Kraken' or _fighter == 'Shark'):
-        return 150
+        return 100
     elif (_fighter == 'Kaiju' or _fighter == 'Kong'):
-        return 250
+        return 200
     elif _creature == 'Alien':
-        return 400
+        return 300
 
 def pirate_summon(_player):
     enemy_summon_options = enemySummonOption(_player)
@@ -158,6 +178,16 @@ def pirate_summon(_player):
     updated_player_gold = _player.gold - cost
     _player.update_gold(updated_player_gold)
     return damage
+
+def pirateSummonFighter(item):
+    if (item == 'Kraken' or item == 'Shark'):
+        return 75
+    elif (item == 'Kaiju' or item == 'Kong') and _player.gold >= 200:
+        return 150
+    elif item == 'Alien' and _player.gold >= 300:
+        return 250
+    else:
+        return 0
 
 def playerBattle(_player, _game_map, _current_area):
     print('You entered player battle!')
